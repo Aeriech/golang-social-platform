@@ -5,6 +5,7 @@ import (
 
 	"github.com/aeriech/social/internal/model"
 	"github.com/aeriech/social/internal/validate"
+	"github.com/go-chi/chi/v5"
 )
 
 type CreatePostRequest struct {
@@ -50,6 +51,23 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	err = writeJson(w, http.StatusCreated, post)
+	if err != nil {
+		errorJson(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+}
+
+func (app *application) getPostByIdHandler(w http.ResponseWriter, r *http.Request) {
+	postID := chi.URLParam(r, "id")
+
+	var post model.Post
+	findResult := app.db.Preload("Tags").Preload("User").Find(&post, postID)
+	if findResult.Error != nil {
+		errorJson(w, http.StatusInternalServerError, findResult.Error.Error())
+		return
+	}
+
+	err := writeJson(w, http.StatusFound, post)
 	if err != nil {
 		errorJson(w, http.StatusInternalServerError, err.Error())
 		return
