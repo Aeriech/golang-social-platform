@@ -11,6 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	version = "0.0.1"
+)
+
 func main() {
 	// Load .env file
 	err := godotenv.Load()
@@ -21,6 +25,7 @@ func main() {
 	newConfig := config{
 		address: env.GetString("ADDRESS", ":8080"),
 		dns:     dbConfig.GetDns(),
+		env: env.GetString("ENV", "development"),
 	}
 
 	db, err := gorm.Open(postgres.Open(newConfig.dns), &gorm.Config{})

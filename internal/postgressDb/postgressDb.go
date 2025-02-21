@@ -8,13 +8,13 @@ import (
 
 func GetDbConfig() DbConfig {
 	return DbConfig{
-		host:     env.GetString("DB_HOST", ""),
-		user:     env.GetString("DB_USER", ""),
-		password: env.GetString("DB_PASSWORD", ""),
-		dbName:   env.GetString("DB_NAME", ""),
-		port:     env.GetString("DB_PORT", ""),
-		sslMode:  env.GetString("DB_SSL_MODE", ""),
-		timeZone: env.GetString("DB_TIMEZONE", ""),
+		host:     env.GetString("DB_HOST", "localhost"),
+		user:     env.GetString("DB_USER", "user"),
+		password: env.GetString("DB_PASSWORD", "password"),
+		dbName:   env.GetString("DB_NAME", "social"),
+		port:     env.GetString("DB_PORT", "5432"),
+		sslMode:  env.GetString("DB_SSL_MODE", "disable"),
+		timeZone: env.GetString("DB_TIMEZONE", "Asia/Shanghai"),
 	}
 }
 

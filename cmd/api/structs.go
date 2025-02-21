@@ -12,4 +12,5 @@ type application struct {
 type config struct {
 	address string
 	dns     string
+	env    string
 }
