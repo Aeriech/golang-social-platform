@@ -5,19 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aeriech/social/internal/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
-
-type application struct {
-	config config
-	store  store.Storage
-}
-
-type config struct {
-	address string
-}
 
 func (app *application) mount() http.Handler {
 	router := chi.NewRouter()

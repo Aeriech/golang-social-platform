@@ -2,7 +2,8 @@ package store
 
 import (
 	"context"
-	"database/sql"
+
+	"gorm.io/gorm"
 )
 
 type Storage struct {
@@ -10,11 +11,11 @@ type Storage struct {
 		Create(context.Context, *Post) error
 	}
 	Users interface {
-		Create(context.Context) error
+		Create(context.Context, *User) error
 	}
 }
 
-func NewStorage(db *sql.DB) Storage {
+func NewStorage(db *gorm.DB) Storage {
 	return Storage{
 		Posts: &PostsStore{db},
 		Users: &UsersStore{db},
