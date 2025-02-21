@@ -34,6 +34,8 @@ func main() {
 	}
 	log.Println("Connected to database")
 
+	db.AutoMigrate(&store.User{}, &store.Post{}, &store.Tag{})
+
 	store := store.NewStorage(db)
 
 	app := &application{

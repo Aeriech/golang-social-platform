@@ -10,24 +10,28 @@ import (
 )
 
 func (app *application) mount() http.Handler {
-	router := chi.NewRouter()
+	r := chi.NewRouter()
 
 	// A good base middleware stack
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
 	// processing should be stopped.
-	router.Use(middleware.Timeout(60 * time.Second))
+	r.Use(middleware.Timeout(60 * time.Second))
 
-	router.Route("/v1", func(router chi.Router) {
-		router.Get("/health", app.healthCheckHandler)
+	r.Route("/v1", func(r chi.Router) {
+		r.Get("/health", app.healthCheckHandler)
+
+		r.Route("/posts", func(r chi.Router) {
+			r.Post("/", app.createPostHandler)
+		})
 	})
 
-	return router
+	return r
 
 }
 
