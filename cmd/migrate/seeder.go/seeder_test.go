@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
+	"github.com/aeriech/social/internal/model"
 	dbConfig "github.com/aeriech/social/internal/postgressDb"
-	"github.com/aeriech/social/internal/store"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,18 +21,20 @@ func init() {
 		log.Fatal("Error gorm.Open: ", err.Error())
 	}
 
-	db.AutoMigrate(&store.User{}, &store.Post{}, &store.Tag{})
+	db.AutoMigrate(&model.User{}, &model.Post{}, &model.Tag{})
 }
 
-func TestFreshSeed(t *testing.T)  {
+func TestFreshSeed(t *testing.T) {
 	dropAllTables(db)
 	migrateTables(db)
 
-	seedUser(db)
+	seedUsers(db)
+	seedTags(db)
+	seedPosts(db)
 }
 
 func TestMigrate(t *testing.T) {
-	db.AutoMigrate(&store.User{}, &store.Post{}, &store.Tag{})
+	db.AutoMigrate(&model.User{}, &model.Post{}, &model.Tag{})
 }
 
 func TestDropTable(t *testing.T) {

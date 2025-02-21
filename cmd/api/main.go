@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/aeriech/social/internal/env"
+	"github.com/aeriech/social/internal/model"
 	dbConfig "github.com/aeriech/social/internal/postgressDb"
-	"github.com/aeriech/social/internal/store"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,7 +25,7 @@ func main() {
 	newConfig := config{
 		address: env.GetString("ADDRESS", ":8080"),
 		dns:     dbConfig.GetDns(),
-		env: env.GetString("ENV", "development"),
+		env:     env.GetString("ENV", "development"),
 	}
 
 	db, err := gorm.Open(postgres.Open(newConfig.dns), &gorm.Config{})
@@ -34,13 +34,11 @@ func main() {
 	}
 	log.Println("Connected to database")
 
-	db.AutoMigrate(&store.User{}, &store.Post{}, &store.Tag{})
-
-	store := store.NewStorage(db)
+	db.AutoMigrate(&model.User{}, &model.Post{}, &model.Tag{})
 
 	app := &application{
 		config: newConfig,
-		store:  store,
+		db:     db,
 	}
 
 	mux := app.mount()

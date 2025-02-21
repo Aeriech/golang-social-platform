@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/aeriech/social/internal/store"
+	"gorm.io/gorm"
 )
 
 type application struct {
 	config config
-	store  store.Storage
+	db     *gorm.DB
 }
 
 type config struct {
 	address string
 	dns     string
-	env    string
+	env     string
 }

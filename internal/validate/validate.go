@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func validateStruct(structValue any) error {
+func ValidateStruct(structValue any) error {
 	newValidator := validator.New()
 
 	err := newValidator.Struct(structValue)
