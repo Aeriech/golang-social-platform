@@ -9,14 +9,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-type application struct {
-	config config
-}
-
-type config struct {
-	address string
-}
-
 func (app *application) mount() http.Handler {
 	router := chi.NewRouter()
 
