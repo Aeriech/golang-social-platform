@@ -33,7 +33,7 @@ func (app *application) mount() http.Handler {
 
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", app.getPostByIdHandler)
-				//r.Delete("/", app.deletePostHandler)
+				r.Delete("/", app.deletePostHandler)
 			})
 		})
 	})

@@ -137,3 +137,20 @@ func (app *application) getPostListHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 }
+
+func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request) {
+	postID := chi.URLParam(r, "id")
+
+	var post model.Post
+	result := app.db.Delete(&post, postID)
+	if result.Error != nil {
+		app.internalServerError(w, r, result.Error)
+		return
+	}
+
+	err := writeJson(w, http.StatusFound, postID)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+}
