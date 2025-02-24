@@ -31,6 +31,8 @@ func customErrorMessage(fieldError validator.FieldError) string {
 		return fmt.Sprintf("%s is required", fieldError.Field())
 	case "min":
 		return fmt.Sprintf("%s must be at least %s characters", fieldError.Field(), fieldError.Param())
+	case "max":
+		return fmt.Sprintf("%s must not exceed %s characters", fieldError.Field(), fieldError.Param())
 	case "email":
 		return "Invalid email format"
 		// Add more cases as needed

@@ -10,10 +10,10 @@ import (
 )
 
 type CreatePostRequest struct {
-	Title   string  `json:"title" validate:"required"`
-	Content string  `json:"content" validate:"required"`
+	Title   string  `json:"title" validate:"required,max=100"`
+	Content string  `json:"content" validate:"required,max=200"`
 	UserId  int64   `json:"user_id" validate:"required"`
-	Tags    []int64 `json:"tags" validate:"required"`
+	TagIds  []int64 `json:"tag_ids" validate:"array"`
 }
 
 func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,13 +32,13 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	var tags []model.Tag
-	findResult := app.db.Find(&tags, payload.Tags)
+	findResult := app.db.Find(&tags, payload.TagIds)
 	if findResult.Error != nil {
 		app.internalServerError(w, r, findResult.Error)
 		return
 	}
 
-	if len(tags) != len(payload.Tags) {
+	if len(tags) != len(payload.TagIds) {
 		app.notFoundError(w, r, errors.New("invalid tags"))
 		return
 	}

@@ -28,9 +28,7 @@ func TestFreshSeed(t *testing.T) {
 	dropAllTables(db)
 	migrateTables(db)
 
-	seedUsers(db)
-	seedTags(db)
-	seedPosts(db)
+	seedAll(db)
 }
 
 func TestMigrate(t *testing.T) {

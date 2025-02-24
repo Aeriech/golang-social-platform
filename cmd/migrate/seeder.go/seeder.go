@@ -11,7 +11,14 @@ func dropAllTables(db *gorm.DB) {
 }
 
 func migrateTables(db *gorm.DB) {
-	db.AutoMigrate(&model.User{}, &model.Post{}, &model.Tag{})
+	db.AutoMigrate(&model.User{}, &model.Post{}, &model.Tag{}, &model.Comment{})
+}
+
+func seedAll(db *gorm.DB) {
+	seedUsers(db)
+	seedTags(db)
+	seedPosts(db)
+	seedComments(db)
 }
 
 func seedUsers(db *gorm.DB) {
@@ -62,5 +69,23 @@ func seedPosts(db *gorm.DB) {
 		}
 
 		db.Create(&post)
+	}
+}
+
+func seedComments(db *gorm.DB) {
+	for count := 0; count < 100; count++ {
+		post := model.Post{}
+		db.Order("RANDOM()").First(&post)
+
+		user := model.User{}
+		db.Order("RANDOM()").First(&user)
+
+		comment := model.Comment{
+			Content: gofakeit.Sentence(10),
+			UserID:  user.ID,
+			PostID:  post.ID,
+		}
+
+		db.Create(&comment)
 	}
 }
