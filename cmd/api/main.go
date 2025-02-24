@@ -5,7 +5,7 @@ import (
 
 	"github.com/aeriech/social/internal/env"
 	"github.com/aeriech/social/internal/model"
-	dbConfig "github.com/aeriech/social/internal/postgressDb"
+	"github.com/aeriech/social/internal/postgresDb"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ func main() {
 
 	newConfig := config{
 		address: env.GetString("ADDRESS", ":8080"),
-		dns:     dbConfig.GetDns(),
+		dns:     postgresDb.GetDns(),
 		env:     env.GetString("ENV", "development"),
 	}
 

@@ -1,4 +1,4 @@
-package postgressDb
+package postgresDb
 
 type DbConfig struct {
 	host     string

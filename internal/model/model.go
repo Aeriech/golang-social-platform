@@ -6,18 +6,19 @@ import (
 
 type Post struct {
 	gorm.Model
-	Content  string    `json:"content,omitempty" gorm:"not null"`
-	Title    string    `json:"title,omitempty" gorm:"not null"`
-	UserID   int64     `json:"user_id,omitempty" gorm:"not null"`
-	User     *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`    // Belongs to a User
-	Tags     []Tag     `json:"tags,omitempty" gorm:"many2many:post_tags;"` // Many-to-Many relationship
-	Comments []Comment `json:"comments,omitempty"`                         // One-To-Many relationship
+	Content       string    `json:"content,omitempty" gorm:"not null"`
+	Title         string    `json:"title,omitempty" gorm:"not null"`
+	UserID        int64     `json:"user_id,omitempty" gorm:"not null;<-"`       // not null and create, update only
+	User          *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`    // Belongs to a User
+	Tags          []Tag     `json:"tags,omitempty" gorm:"many2many:post_tags;"` // Many-to-Many relationship
+	Comments      []Comment `json:"comments,omitempty"`                         // One-To-Many relationship
+	CommentsCount int64     `json:"comments_count,omitempty" gorm:"-:all"`      // ignore this field when write, read and migrate with struct
 }
 
 type User struct {
 	gorm.Model
 	Name  string `json:"name,omitempty" gorm:"not null"`
-	Email string `json:"email,omitempty" gorm:"uniqueIndex,not null"` // Ensures email uniqueness
+	Email string `json:"email,omitempty" gorm:"uniqueIndex;not null"` // Ensures email uniqueness
 	Posts []Post `json:"posts,omitempty"`                             // One-to-Many: A user can have multiple posts
 }
 

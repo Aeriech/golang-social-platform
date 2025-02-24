@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/aeriech/social/internal/model"
-	dbConfig "github.com/aeriech/social/internal/postgressDb"
+	"github.com/aeriech/social/internal/postgresDb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -13,7 +13,7 @@ import (
 var db *gorm.DB
 
 func init() {
-	dns := dbConfig.GetDns()
+	dns := postgresDb.GetDns()
 
 	var err error
 	db, err = gorm.Open(postgres.Open(dns), &gorm.Config{})
