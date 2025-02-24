@@ -14,3 +14,9 @@ type config struct {
 	dns     string
 	env     string
 }
+
+type filter struct {
+	Page    int `json:"page"`
+	PerPage int `json:"per_page"`
+	Offset  int `json:"offset"`
+}

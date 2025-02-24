@@ -29,6 +29,7 @@ func (app *application) mount() http.Handler {
 		r.Route("/posts", func(r chi.Router) {
 			r.Post("/", app.createPostHandler)
 			r.Get("/", app.getPostsHandler)
+			r.Post("/list", app.getPostListHandler)
 
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", app.getPostByIdHandler)
@@ -53,4 +54,25 @@ func (app *application) run(mux http.Handler) error {
 	log.Printf("server has started at %s", app.config.address)
 
 	return server.ListenAndServe()
+}
+
+func getFilter(w http.ResponseWriter, r *http.Request) (filter, error) {
+	var payload filter
+
+	err := readJson(w, r, &payload)
+	if err != nil {
+		return payload, err
+	}
+
+	if payload.Page == 0 {
+		payload.Page = 1
+	}
+
+	if payload.PerPage == 0 {
+		payload.PerPage = 20
+	}
+
+	payload.Offset = (payload.Page - 1) * payload.PerPage
+
+	return payload, nil
 }

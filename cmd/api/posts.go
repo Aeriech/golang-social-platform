@@ -17,6 +17,11 @@ type CreatePostRequest struct {
 	TagIds  []int64 `json:"tag_ids" validate:"array"`
 }
 
+type PostWithCommentsCount struct {
+	model.Post
+	CommentsCount int64 `json:"comments_count"`
+}
+
 func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request) {
 	var payload CreatePostRequest
 
@@ -82,14 +87,51 @@ func (app *application) getPostByIdHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *application) getPostsHandler(w http.ResponseWriter, r *http.Request) {
-	var posts []model.Post
-	findResult := app.db.Preload("User").Find(&posts)
+	var posts []PostWithCommentsCount
+
+	findResult := app.db.Table("posts").
+		Select("posts.*, COUNT(comments.id) as comments_count").
+		Joins("LEFT JOIN comments ON comments.post_id = posts.id").
+		Preload("User").
+		Group("posts.id").
+		Find(&posts)
+
 	if findResult.Error != nil {
 		app.internalServerError(w, r, findResult.Error)
 		return
 	}
 
 	err := writeJson(w, http.StatusFound, posts)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+}
+
+func (app *application) getPostListHandler(w http.ResponseWriter, r *http.Request) {
+	var posts []PostWithCommentsCount
+
+	payload, err := getFilter(w, r)
+	if err != nil {
+		app.badRequestError(w, r, err)
+		return
+	}
+
+	findResult := app.db.Table("posts").
+		Select("posts.*, COUNT(comments.id) as comments_count").
+		Joins("LEFT JOIN comments ON comments.post_id = posts.id").
+		Preload("User").
+		Group("posts.id").
+		Limit(payload.PerPage).
+		Offset(payload.Offset).
+		Find(&posts)
+
+	if findResult.Error != nil {
+		app.internalServerError(w, r, findResult.Error)
+		return
+	}
+
+	err = writeJson(w, http.StatusFound, posts)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return

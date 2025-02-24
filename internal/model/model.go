@@ -12,7 +12,6 @@ type Post struct {
 	User          *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`    // Belongs to a User
 	Tags          []Tag     `json:"tags,omitempty" gorm:"many2many:post_tags;"` // Many-to-Many relationship
 	Comments      []Comment `json:"comments,omitempty"`                         // One-To-Many relationship
-	CommentsCount int64     `json:"comments_count,omitempty" gorm:"-:all"`      // ignore this field when write, read and migrate with struct
 }
 
 type User struct {
