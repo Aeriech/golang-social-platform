@@ -8,7 +8,7 @@ type Post struct {
 	gorm.Model
 	Content       string    `json:"content,omitempty" gorm:"not null"`
 	Title         string    `json:"title,omitempty" gorm:"not null"`
-	UserID        int64     `json:"user_id,omitempty" gorm:"not null;<-"`       // not null and create, update only
+	UserID        int64     `json:"user_id,omitempty" gorm:"not null"`
 	User          *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`    // Belongs to a User
 	Tags          []Tag     `json:"tags,omitempty" gorm:"many2many:post_tags;"` // Many-to-Many relationship
 	Comments      []Comment `json:"comments,omitempty"`                         // One-To-Many relationship
