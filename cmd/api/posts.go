@@ -7,6 +7,7 @@ import (
 	"github.com/aeriech/social/internal/model"
 	"github.com/aeriech/social/internal/validate"
 	"github.com/go-chi/chi/v5"
+	"gorm.io/gorm/clause"
 )
 
 type CreatePostRequest struct {
@@ -67,7 +68,7 @@ func (app *application) getPostByIdHandler(w http.ResponseWriter, r *http.Reques
 	postID := chi.URLParam(r, "id")
 
 	var post model.Post
-	findResult := app.db.Preload("Tags").Preload("User").Find(&post, postID)
+	findResult := app.db.Preload(clause.Associations).Find(&post, postID)
 	if findResult.Error != nil {
 		app.internalServerError(w, r, findResult.Error)
 		return
@@ -82,7 +83,7 @@ func (app *application) getPostByIdHandler(w http.ResponseWriter, r *http.Reques
 
 func (app *application) getPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var posts []model.Post
-	findResult := app.db.Preload("Tags").Preload("User").Find(&posts)
+	findResult := app.db.Preload("User").Find(&posts)
 	if findResult.Error != nil {
 		app.internalServerError(w, r, findResult.Error)
 		return

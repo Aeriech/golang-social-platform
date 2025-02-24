@@ -6,6 +6,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	_RANDOM_ORDER = "RANDOM()"
+)
+
 func dropAllTables(db *gorm.DB) {
 	db.Exec("DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
 }
@@ -54,15 +58,15 @@ func seedTags(db *gorm.DB) {
 func seedPosts(db *gorm.DB) {
 	for count := 0; count < 10; count++ {
 		tag := model.Tag{}
-		db.Order("RANDOM()").First(&tag)
+		db.Order(_RANDOM_ORDER).First(&tag)
 
 		user := model.User{}
-		db.Order("RANDOM()").First(&user)
+		db.Order(_RANDOM_ORDER).First(&user)
 
 		post := model.Post{
 			Title:   gofakeit.Sentence(5),
 			Content: gofakeit.Sentence(10),
-			UserID:  user.ID,
+			UserID:  int64(user.Model.ID),
 			Tags: []model.Tag{
 				tag,
 			},
@@ -75,15 +79,15 @@ func seedPosts(db *gorm.DB) {
 func seedComments(db *gorm.DB) {
 	for count := 0; count < 100; count++ {
 		post := model.Post{}
-		db.Order("RANDOM()").First(&post)
+		db.Order(_RANDOM_ORDER).First(&post)
 
 		user := model.User{}
-		db.Order("RANDOM()").First(&user)
+		db.Order(_RANDOM_ORDER).First(&user)
 
 		comment := model.Comment{
 			Content: gofakeit.Sentence(10),
-			UserID:  user.ID,
-			PostID:  post.ID,
+			UserID:  int64(user.Model.ID),
+			PostID:  int64(post.Model.ID),
 		}
 
 		db.Create(&comment)
