@@ -22,6 +22,15 @@ type PostWithCommentsCount struct {
 	CommentsCount int64 `json:"comments_count"`
 }
 
+type UpdatePostRequest struct {
+	Title   string `json:"title" validate:"required,max=100"`
+	Content string `json:"content" validate:"required,max=200"`
+}
+
+var (
+	errPostNotFound = errors.New("post not found")
+)
+
 func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request) {
 	var payload CreatePostRequest
 
@@ -76,6 +85,11 @@ func (app *application) getPostByIdHandler(w http.ResponseWriter, r *http.Reques
 	findResult := app.db.Preload(clause.Associations).Find(&post, postID)
 	if findResult.Error != nil {
 		app.internalServerError(w, r, findResult.Error)
+		return
+	}
+
+	if post.ID == 0 {
+		app.notFoundError(w, r, errPostNotFound)
 		return
 	}
 
@@ -138,6 +152,49 @@ func (app *application) getPostListHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request) {
+	postID := chi.URLParam(r, "id")
+
+	var post model.Post
+	findResult := app.db.Find(&post, postID)
+	if findResult.Error != nil {
+		app.internalServerError(w, r, findResult.Error)
+		return
+	}
+
+	if post.ID == 0 {
+		app.notFoundError(w, r, errPostNotFound)
+		return
+	}
+
+	var payload UpdatePostRequest
+	err := readJson(w, r, &payload)
+	if err != nil {
+		app.badRequestError(w, r, err)
+		return
+	}
+
+	if payload.Title == post.Title && payload.Content == post.Content {
+		app.badRequestError(w, r, errors.New("title and content are the same"))
+		return
+	}
+
+	post.Title = payload.Title
+	post.Content = payload.Content
+
+	saveResult := app.db.Save(&post)
+	if saveResult.Error != nil {
+		app.internalServerError(w, r, findResult.Error)
+		return
+	}
+
+	err = writeJson(w, http.StatusFound, post)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+}
+
 func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 
@@ -145,6 +202,11 @@ func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request
 	result := app.db.Delete(&post, postID)
 	if result.Error != nil {
 		app.internalServerError(w, r, result.Error)
+		return
+	}
+
+	if post.ID == 0 {
+		app.notFoundError(w, r, errPostNotFound)
 		return
 	}
 
